@@ -9,3 +9,7 @@ carts/.DS_Store
 carts/*.png
 carts/demos/*
 .DS_Store
+carts/collide.p8
+cdata/*
+
+carts/untitled.p8

@@ -2,750 +2,755 @@ pico-8 cartridge // http://www.pico-8.com
 version 43
 __lua__
 function set_wave(wave)
- if wave==1 then
-  bmb_init_spwn_rate=5
-  inv_top=20
-  bmb_spd=1
- elseif wave==2 then
-  bmb_init_spwn_rate=4
-  inv_top=20
-  inv_wave_dly_cnt=inv_wave_dly
-  bmb_spd=1
-  --stop(inv_wave_dly_cnt)
- elseif wave==3 then
-  bmb_init_spwn_rate=4
-  inv_top=30
-  inv_wave_dly_cnt=inv_wave_dly
-  bmb_spd=1.25
- elseif wave==4 then
-  bmb_init_spwn_rate=3
-  inv_top=30
-  inv_wave_dly_cnt=inv_wave_dly
-  bmb_spd=1.25
- else
-  bmb_init_spwn_rate=3
-  inv_top=40
-  inv_wave_dly_cnt=inv_wave_dly
-  bmb_spd=1.25
- end
- bmb_spwn_rate=bmb_init_spwn_rate
- inv_dly_cnt=inv_row_dly               
- create_invs(inv_top)
+   if wave == 1 then
+      bmb_init_spwn_rate = 5
+      inv_top = 20
+      bmb_spd = 1
+   elseif wave == 2 then
+      bmb_init_spwn_rate = 4
+      inv_top = 20
+      inv_wave_dly_cnt = inv_wave_dly
+      bmb_spd = 1
+      --stop(inv_wave_dly_cnt)
+   elseif wave == 3 then
+      bmb_init_spwn_rate = 4
+      inv_top = 30
+      inv_wave_dly_cnt = inv_wave_dly
+      bmb_spd = 1.25
+   elseif wave == 4 then
+      bmb_init_spwn_rate = 3
+      inv_top = 30
+      inv_wave_dly_cnt = inv_wave_dly
+      bmb_spd = 1.25
+   else
+      bmb_init_spwn_rate = 3
+      inv_top = 40
+      inv_wave_dly_cnt = inv_wave_dly
+      bmb_spd = 1.25
+   end
+   bmb_spwn_rate = bmb_init_spwn_rate
+   inv_dly_cnt = inv_row_dly
+   create_invs(inv_top)
 end
 
 function _init()
- if cartdata("pinvaders_cart") then
-  hiscore=dget(1)
- else
-  hiscore=0
-  dset(1,hiscore)
- end
- 
- -- missile state
- ms_mov=0
- ms_top=1 -- hit the top
- ms_exp=2 -- hit a bomb
- ms_bnk=3 -- hit a bunker
- ms_bmb=4 -- hit a bomb
+   if cartdata("pinvaders_cart") then
+      hiscore = dget(1)
+   else
+      hiscore = 0
+      dset(1, hiscore)
+   end
 
- msl_spd=2 -- missle speed
+   -- missile state
+   ms_mov = 0
+   ms_top = 1
+   -- hit the top
+   ms_exp = 2
+   -- hit a bomb
+   ms_bnk = 3
+   -- hit a bunker
+   ms_bmb = 4
+   -- hit a bomb
 
- dmg_exp_cnt=3 -- how long to show damage explosion
- 
- msl_sfx_chl=2
- msl_sfx_max_timer=60
- msl_sfx_min_timer=20
+   msl_spd = 2
+   -- missle speed
 
- -- base states
- bs_spwn=-1
- bs_intact=0
- bs_exp=1
- bs_dead=2
+   dmg_exp_cnt = 3
+   -- how long to show damage explosion
 
- base_exp_cnt=50
- base_sfx_chl=3
- 
- base_spwn_dly=100
- 
- -- game states
- gs_init=1
- gs_inprog=2
- gs_over=3
- 
- game_state=gs_init
+   msl_sfx_chl = 2
+   msl_sfx_max_timer = 60
+   msl_sfx_min_timer = 20
 
- gs_over_dly=300
-    
- init_invs()
- init_saucers()
- init_game()
+   -- base states
+   bs_spwn = -1
+   bs_intact = 0
+   bs_exp = 1
+   bs_dead = 2
+
+   base_exp_cnt = 50
+   base_sfx_chl = 3
+
+   base_spwn_dly = 100
+
+   -- game states
+   gs_init = 1
+   gs_inprog = 2
+   gs_over = 3
+
+   game_state = gs_init
+
+   gs_over_dly = 300
+
+   init_invs()
+   init_saucers()
+   init_game()
 end
 
 function init_bunkers()
- damage={} -- damage to bunkers
-	bunkers={
-	  {x=11,y=104}, -- bunker 1
-	  {x=41,y=104}, -- bunker 2
-	  {x=71,y=104}, -- bunker 3
-	  {x=101,y=104}, -- bunker 4
-	}
+   damage = {}
+   -- damage to bunkers
+   bunkers = {
+      { x = 11, y = 104 }, -- bunker 1
+      { x = 41, y = 104 }, -- bunker 2
+      { x = 71, y = 104 }, -- bunker 3
+      { x = 101, y = 104 } -- bunker 4
+   }
 end
 
 function init_base()
- base={x=0,y=120,
-       spd=0.5,
-       state=bs_spwn,
-       exp_cnt=0,
-       sp=14,
-       spwn_cnt=base_spwn_dly}
+   base = {
+      x = 0, y = 120,
+      spd = 0.75,
+      state = bs_spwn,
+      exp_cnt = 0,
+      sp = 14,
+      spwn_cnt = base_spwn_dly
+   }
 end
 
 function init_game()
-	wave=1
-	lives=3
- msl={}
- init_base()
- set_wave(wave)
- btnxdown=false
- init_bunkers()
- invs={}
- saucers={}
- score=0
- game_state=gs_init
+   wave = 1
+   lives = 3
+   msl = {}
+   init_base()
+   set_wave(wave)
+   btnxdown = false
+   init_bunkers()
+   invs = {}
+   saucers = {}
+   score = 0
+   game_state = gs_init
 end
 
 function check_hiscore()
- if score>hiscore then
-  hiscore=score
-  dset(1,hiscore)
- end
+   if score > hiscore then
+      hiscore = score
+      dset(1, hiscore)
+   end
 end
 
 function _update60()
- if game_state==gs_init then
-  if btn(❎) then
-   init_game()
-   game_state=gs_inprog
-  end
-  return
- end
-
- update_invs()
-
- update_bombs()
- 
- update_saucers()
-
- if game_state==gs_over then
-  gs_over_cnt-=1
-  if gs_over_cnt<=0 then
-   game_state=gs_init
-   sfx(-1)
-  end 
- end 
- 
- -- update base
- if base.state==bs_intact then
-  if (btn(⬅️)) base.x=max(0,base.x-base.spd)
-  if (btn(➡️)) base.x=min(117,base.x+base.spd)
-
-	 if btn(❎) then
-	  if not btnxdown then
-	   if (#msl==0) then
-	    btnxdown=true
-	    add(msl,{
-	        x=flr(base.x)+5,
-	        y=base.y-5,
-	        state=ms_mov,
-	        sfxtimer=msl_sfx_max_timer})
-					sfx(5,msl_sfx_chl)
-	   end
-	  end
-	 else
-	  btnxdown=false
-	 end
-	elseif base.state==bs_exp then
-	 if base.exp_cnt>0 then
-	  base.exp_cnt-=1
-	 else
-   lives-=1
-   --stop("lost a life")
-	  if lives==0 then
-	    game_state=gs_over
-	    check_hiscore()
-	    gs_over_cnt=gs_over_dly
-	    base.state=bs_dead 
-	  else
-	   init_base()
-	  end
-	 end
-	elseif base.state==bs_spwn then
-	 if base.spwn_cnt>0 then
-	  base.spwn_cnt-=1 
-	 else
-	  base.state=bs_intact
-	 end
- end
- 
- if game_state!=gs_inprog then
-  return
- end
-
- for m in all(msl) do
-  if m.sfxtimer>0 then
-   m.sfxtimer-=1
-  else
-   del(msl,m)
-   sfx(-1,msl_sfx_chl)
-  end
-  if m.state==ms_mov then
-   m.y-=msl_spd
-   if m.y<2 then
-    m.state=ms_top
-    m.cnt=16 -- frames to show
+   if game_state == gs_init then
+      if btn(❎) then
+         init_game()
+         game_state = gs_inprog
+      end
+      return
    end
-   
-	  -- check collisions with bunkers
-	  for y=m.y+5,m.y+12 do
-	   if pget(m.x,y)==11 then -- green:hit bunker
-	    add(damage,{x=m.x-2,y=y-2,sp=23,cnt=dmg_exp_cnt})
-	    m.sfxtimer=min(msl_sfx_min_timer,m.sfxtimer)
-	    m.state=ms_bnk
-	    break    
-	   end 
-	  end
-	  
-	  -- check collisions with invaders
-	  for i in all(invs) do
-	   if i.state==is_alive and
-	      m.x>=i.x+inv_offs[i.itype] and 
-	      m.x<i.x+inv_offs[i.itype]+inv_rwid[i.itype] and
-	      i.y-m.y<4 and 
-	      i.y-m.y>-4 then
-	    i.state=is_exp
-	    --stop(m.x..","..i.x)
-		   sfx(4,inv_sfx_exp_chl)
-	
-	    i.expcnt=inv_exp_cnt
-	    m.sfxtimer=min(msl_sfx_min_timer,msl.sfxtimer)
-	    m.state=ms_exp
-	   end
-	  end
-	  
-   -- check for collisions with bombs
-   for b in all(bmbs) do
-    if m.x<=b.x+2 and
-       m.x>=b.x and
-       m.y+4<=b.y+8 and
-       m.y+7>=b.y 
-    then
-	    m.sfxtimer=min(msl_sfx_min_timer,msl.sfxtimer)
-     m.state=ms_bmb
-     m.cnt=30 -- frames to show
-     -- bomb type 1 = indestructible
-     -- bomb type 2 = 50/50
-     --stop(b.typ)
-     if b.typ==3 or
-        (b.typ==2 and 
-         flr(rnd(2))==1) then
-      --stop("del bmb")   
-      del(bmbs,b)
-     end
-    end   
+
+   update_invs()
+
+   update_bombs()
+
+   update_saucers()
+
+   if game_state == gs_over then
+      gs_over_cnt -= 1
+      if gs_over_cnt <= 0 then
+         game_state = gs_init
+         sfx(-1)
+      end
    end
-   
-   -- check for collisions with saucers
-   for s in all(saucers) do
-    if s.state==ss_intact and
-       m.x>=s.x and
-       m.x<=s.x+15 and
-       m.y+4>=s.y and
-       m.y+7<=s.y+6  
-    then
-     s.expcnt=60 -- frames to show
-     s.scrcnt=100 -- frames to show 
-     s.state=ss_exp
-     s.score=rnd(saucer_scores)
- 	   sfx(8,sfx_inv_chl)
-    end
+
+   -- update base
+   if base.state == bs_intact then
+      if (btn(⬅️)) base.x = max(0, base.x - base.spd) 
+      if (btn(➡️)) base.x = min(117, base.x + base.spd) 
+      if btn(❎) then
+         if not btnxdown then
+            if (#msl == 0) then
+               btnxdown = true
+               add(
+                  msl, {
+                     x = flr(base.x) + 5,
+                     y = base.y - 5,
+                     state = ms_mov,
+                     sfxtimer = msl_sfx_max_timer
+                  }
+               )
+               sfx(5, msl_sfx_chl)
+            end
+         end
+      else
+         btnxdown = false
+      end
+   elseif base.state == bs_exp then
+      if base.exp_cnt > 0 then
+         base.exp_cnt -= 1
+      else
+         lives -= 1
+         --stop("lost a life")
+         if lives == 0 then
+            game_state = gs_over
+            check_hiscore()
+            gs_over_cnt = gs_over_dly
+            base.state = bs_dead
+         else
+            init_base()
+         end
+      end
+   elseif base.state == bs_spwn then
+      if base.spwn_cnt > 0 then
+         base.spwn_cnt -= 1
+      else
+         base.state = bs_intact
+      end
    end
-  end
-    
-  if m.state==ms_top or
-     m.state==ms_bmb then
-   m.cnt-=1
-   if (m.cnt<1) del(msl,m)
-  end
- end
+
+   if game_state != gs_inprog then
+      return
+   end
+
+   for m in all(msl) do
+      if m.sfxtimer > 0 then
+         m.sfxtimer -= 1
+      else
+         del(msl, m)
+         sfx(-1, msl_sfx_chl)
+      end
+      if m.state == ms_mov then
+         m.y -= msl_spd
+         if m.y < 2 then
+            m.state = ms_top
+            m.cnt = 16 -- frames to show
+         end
+
+         -- check collisions with bunkers
+         for y = m.y + 5, m.y + 12 do
+            if pget(m.x, y) == 11 then
+               -- green:hit bunker
+               add(damage, { x = m.x - 2, y = y - 2, sp = 23, cnt = dmg_exp_cnt })
+               m.sfxtimer = min(msl_sfx_min_timer, m.sfxtimer)
+               m.state = ms_bnk
+               break
+            end
+         end
+
+         -- check collisions with invaders
+         for i in all(invs) do
+            if i.state == is_alive
+                  and m.x >= i.x + inv_offs[i.itype]
+                  and m.x < i.x + inv_offs[i.itype] + inv_rwid[i.itype]
+                  and i.y - m.y < 4
+                  and i.y - m.y > -4 then
+               i.state = is_exp
+               --stop(m.x..","..i.x)
+               sfx(4, inv_sfx_exp_chl)
+
+               i.expcnt = inv_exp_cnt
+               m.sfxtimer = min(msl_sfx_min_timer, msl.sfxtimer)
+               m.state = ms_exp
+            end
+         end
+
+         -- check for collisions with bombs
+         for b in all(bmbs) do
+            if m.x <= b.x + 2
+                  and m.x >= b.x
+                  and m.y + 4 <= b.y + 8
+                  and m.y + 7 >= b.y then
+               m.sfxtimer = min(msl_sfx_min_timer, msl.sfxtimer)
+               m.state = ms_bmb
+               m.cnt = 30 -- frames to show
+               -- bomb type 1 = indestructible
+               -- bomb type 2 = 50/50
+               --stop(b.typ)
+               if b.typ == 3
+                     or (b.typ == 2
+                        and flr(rnd(2)) == 1) then
+                  --stop("del bmb")
+                  del(bmbs, b)
+               end
+            end
+         end
+
+         -- check for collisions with saucers
+         for s in all(saucers) do
+            if s.state == ss_intact
+                  and m.x >= s.x
+                  and m.x <= s.x + 15
+                  and m.y + 4 >= s.y
+                  and m.y + 7 <= s.y + 6 then
+               s.expcnt = 60 -- frames to show
+               s.scrcnt = 100 -- frames to show
+               s.state = ss_exp
+               s.score = rnd(saucer_scores)
+               sfx(8, inv_sfx_chl)
+            end
+         end
+      end
+
+      if m.state == ms_top
+            or m.state == ms_bmb then
+         m.cnt -= 1
+         if (m.cnt < 1) del(msl, m)
+      end
+   end
 end
 
 function draw_msl()
- for m in all(msl) do
-  if (m.state==ms_mov) spr(0,m.x,m.y)
-  if (m.state==ms_top) spr(1,m.x,m.y)
-  if (m.state==ms_bmb) spr(22,m.x,m.y)
- end
+   for m in all(msl) do
+      if (m.state == ms_mov) spr(0, m.x, m.y) if (m.state == ms_top) spr(1, m.x, m.y) if (m.state == ms_bmb) spr(22, m.x, m.y)
+   end
 end
 
 function draw_damage()
- for d in all(damage) do
-  if (d.cnt>0) then
-   spr(d.sp,d.x,d.y)
-   d.cnt-=1
-  elseif d.y>112 then
-   del(damage,d)
-  elseif d.cnt==-1 then
-   pal(3,blk) -- chg d.grn to blk
-   spr(d.sp,d.x,d.y)
-   pal()
-  else
-   pal(3,blk) -- chg d.grn to blk
-   spr(22,d.x,d.y)
-   pal()
-  end 
- end
+   for d in all(damage) do
+      if (d.cnt > 0) then
+         spr(d.sp, d.x, d.y)
+         d.cnt -= 1
+      elseif d.y > 112 then
+         del(damage, d)
+      elseif d.cnt == -1 then
+         pal(3, blk) -- chg d.grn to blk
+         spr(d.sp, d.x, d.y)
+         pal()
+      else
+         pal(3, blk) -- chg d.grn to blk
+         spr(22, d.x, d.y)
+         pal()
+      end
+   end
 end
 
 function draw_game_over()
- rectfill(43,88,92,96,blk)
- local gameover="game over"
- local lettime=
-  flr(gs_over_dly/2/#gameover)
- local letter=
-  flr((gs_over_dly-gs_over_cnt)
-      /lettime)
- print(sub(gameover,1,letter),45,90,8)
+   rectfill(43, 88, 92, 96, blk)
+   local gameover = "game over"
+   local lettime = flr(gs_over_dly / 2 / #gameover)
+   local letter = flr((gs_over_dly - gs_over_cnt) / lettime)
+   print(sub(gameover, 1, letter), 45, 90, 8)
 end
 
 function _draw()
- if game_state==gs_init then
-  blk=2
- else
-  blk=0
- end
+   if game_state == gs_init then
+      blk = 2
+   else
+      blk = 0
+   end
 
- cls(blk)
- 
- --draw bunkers
- for b in all(bunkers) do
-  spr(16,b.x,b.y,2,2)
- end
+   cls(blk)
 
- draw_damage()
+   --draw bunkers
+   for b in all(bunkers) do
+      spr(16, b.x, b.y, 2, 2)
+   end
 
- if game_state!=gs_init then 
-	 draw_invs()
-	 draw_bombs()
- end
- 
- if game_state!=gs_init then
-	 --draw base
-	 if base.state==bs_intact then
-	  spr(base.sp,base.x,base.y,2,1)
-	 elseif base.state==bs_exp then
-	  if base.exp_cnt%3==0 then
-	   base.sp+=2
-	   if( base.sp>56) base.sp=54
-	  end
-	  spr(base.sp,base.x,base.y,2,1)
-	 end
- end
- 
- draw_saucers()
- draw_msl()
+   draw_damage()
 
- for i=2,lives do
-  spr(58,(i-2)*6,0)
- end
+   if game_state != gs_init then
+      draw_invs()
+      draw_bombs()
+   end
 
- local scr="000000"..tostr(score)
- print(sub(scr,#scr-5),53,0,7)
+   if game_state != gs_init then
+      --draw base
+      if base.state == bs_intact then
+         spr(base.sp, base.x, base.y, 2, 1)
+      elseif base.state == bs_exp then
+         if base.exp_cnt % 3 == 0 then
+            base.sp += 2
+            if (base.sp > 56) base.sp = 54
+         end
+         spr(base.sp, base.x, base.y, 2, 1)
+      end
+   end
 
- local hiscr="000000"..tostr(hiscore)
- print("hi:"..sub(hiscr,#hiscr-5),88,0,7)
- 
- if game_state==gs_init then
-  rectfill(28,86,106,94,blk)
-  spr(160,10,30,13,3)
-  print("press ❎ to start",30,88,7)
- end
- 
- if game_state==gs_over then
-  draw_game_over()
- end
+   draw_saucers()
+   draw_msl()
+
+   for i = 2, lives do
+      spr(58, (i - 2) * 6, 0)
+   end
+
+   local scr = "000000" .. tostr(score)
+   print(sub(scr, #scr - 5), 53, 0, 7)
+
+   local hiscr = "000000" .. tostr(hiscore)
+   print("hi:" .. sub(hiscr, #hiscr - 5), 88, 0, 7)
+
+   if game_state == gs_init then
+      rectfill(28, 86, 106, 94, blk)
+      spr(160, 10, 30, 13, 3)
+      print("press ❎ to start", 30, 88, 7)
+   end
+
+   if game_state == gs_over then
+      draw_game_over()
+   end
 end
 -->8
 -- invaders and bomb handling
 function init_invs()
- inv_sfxs={0,1,2,3}
- inv_sfx=1
- inv_sfx_chl=0
- inv_sfx_exp_chl=1
-  
- -- invader types
- it_sml=1
- it_med=2
- it_lrg=3
- 
- it_scr={30,20,10}
- 
- -- invader states
- is_spwn=-1
- is_alive=0
- is_exp=1
- 
- inv_exp_cnt=4 -- how long for inv exp
- 
- inv_spr={34,2,6}
- inv_size={2,2,2}
- inv_offs={2,1,0}
- inv_rwid={8,11,12}
-  
- inv_per_row=7
- irowh=10 -- inv row height
- inv_spd=1
- inv_spwn_dly=10  -- delay between each row spawning
- inv_wave_dly=200 -- delay between waves
- inv_wave_dly_cnt=0
+   inv_sfxs = { 0, 1, 2, 3 }
+   inv_sfx = 1
+   inv_sfx_chl = 0
+   inv_sfx_exp_chl = 1
 
- inv_edges={0,0,116}
+   -- invader types
+   it_sml = 1
+   it_med = 2
+   it_lrg = 3
 
- -- how many frames
- -- to wait between row updates
- inv_row_dly=5
+   it_scr = { 30, 20, 10 }
 
- -- bomb types - sprites
- bmb_typs={}
- add(bmb_typs,{num=1,sp=24,h=7})
- add(bmb_typs,{num=2,sp=28,h=6})
- add(bmb_typs,{num=3,sp=40,h=7})
+   -- invader states
+   is_spwn = -1
+   is_alive = 0
+   is_exp = 1
 
- bmbs={}
+   inv_exp_cnt = 4
+   -- how long for inv exp
 
- invs={}
+   inv_spr = { 34, 2, 6 }
+   inv_size = { 2, 2, 2 }
+   inv_offs = { 2, 1, 0 }
+   inv_rwid = { 8, 11, 12 }
+
+   inv_per_row = 7
+   irowh = 10
+   -- inv row height
+   inv_spd = 1
+   inv_spwn_dly = 10
+   -- delay between each row spawning
+   inv_wave_dly = 200
+   -- delay between waves
+   inv_wave_dly_cnt = 0
+
+   inv_edges = { 0, 0, 116 }
+
+   -- how many frames
+   -- to wait between row updates
+   inv_row_dly = 5
+
+   -- bomb types - sprites
+   bmb_typs = {}
+   add(bmb_typs, { num = 1, sp = 24, h = 7 })
+   add(bmb_typs, { num = 2, sp = 28, h = 6 })
+   add(bmb_typs, { num = 3, sp = 40, h = 7 })
+
+   bmbs = {}
+
+   invs = {}
 end
 
 function create_invs(_y)
- inv_rows={5,4,3,2,1}
- inv_row=1
+   inv_rows = { 5, 4, 3, 2, 1 }
+   inv_row = 1
 
- for i=0,inv_per_row-1 do
-  add(invs,new_inv(i*14,_y,it_sml,1)) 
-  add(invs,new_inv(i*14,_y+irowh,it_med,2))
-  add(invs,new_inv(i*14,_y+irowh*2,it_med,3))
-  add(invs,new_inv(i*14,_y+irowh*3,it_lrg,4))
-  add(invs,new_inv(i*14,_y+irowh*4,it_lrg,5))
- end   
+   for i = 0, inv_per_row - 1 do
+      add(invs, new_inv(i * 14, _y, it_sml, 1))
+      add(invs, new_inv(i * 14, _y + irowh, it_med, 2))
+      add(invs, new_inv(i * 14, _y + irowh * 2, it_med, 3))
+      add(invs, new_inv(i * 14, _y + irowh * 3, it_lrg, 4))
+      add(invs, new_inv(i * 14, _y + irowh * 4, it_lrg, 5))
+   end
 end
 
-function new_inv(_x,_y,_itype,_row) 
- local inv={
-  x=_x,
-  y=_y,
-  itype=_itype,
-  row=_row,
-  dx=1,
-  ispr=inv_spr[_itype],
-  state=is_spwn
- }
- return inv
+function new_inv(_x, _y, _itype, _row)
+   local inv = {
+      x = _x,
+      y = _y,
+      itype = _itype,
+      row = _row,
+      dx = 1,
+      ispr = inv_spr[_itype],
+      state = is_spwn
+   }
+   return inv
 end
 
 function inv_below(inv)
- local result=false
- for i in all(invs) do
-  if (i.row>inv.row) and
-     (i.x<inv.x+4) and
-     (i.x>inv.x-4)
-  then
-   result=true
-   break
-  end
- end
- return result
+   local result = false
+   for i in all(invs) do
+      if (i.row > inv.row)
+            and (i.x < inv.x + 4)
+            and (i.x > inv.x - 4) then
+         result = true
+         break
+      end
+   end
+   return result
 end
 
 function inv_update(inv)
- if (inv.state==is_spwn) inv.state=is_alive
+   if (inv.state == is_spwn) inv.state = is_alive
+   if (base.state != bs_intact) return
+   -- animate
+   if inv.ispr > inv_spr[inv.itype] then
+      inv.ispr = inv_spr[inv.itype]
+   else
+      inv.ispr += inv_size[inv.itype]
+   end
 
- if (base.state!=bs_intact) return
- 
- -- animate
- if inv.ispr>inv_spr[inv.itype] then
-  inv.ispr=inv_spr[inv.itype]
- else
-  inv.ispr+=inv_size[inv.itype]
- end
+   -- move
+   if (inv.state == is_alive) inv.x += inv_spd * inv.dx
+   if inv.dropnext then
+      inv.dx = inv.dx * -1
+      inv.x += inv_spd * inv.dx
+      inv.y += irowh
+      inv.dropnext = false
+   end
 
- -- move
- if (inv.state==is_alive) inv.x+=inv_spd*inv.dx
- 
- if inv.dropnext then
-  inv.dx=inv.dx*-1
-		inv.x+=inv_spd*inv.dx
-  inv.y+=irowh
-  inv.dropnext=false
- end
- 
- -- spawn bombs 
- if not inv_below(inv) and
-  inv.y<110 -- can't bomb on last row
- then
-	 local spwn=rnd(bmb_spwn_rate)
-	 if (flr(spwn)==0) new_bomb(inv)
-	end
-	
-	if inv.y>=96 then
-  add(damage,{x=inv.x,y=inv.y,sp=48,cnt=-1})
-  add(damage,{x=inv.x+8,y=inv.y,sp=49,cnt=-1})
- end 
+   -- spawn bombs
+   if not inv_below(inv)
+         and inv.y < 110 then
+      -- can't bomb on last row
+
+      local spwn = rnd(bmb_spwn_rate)
+      if (flr(spwn) == 0) new_bomb(inv)
+   end
+
+   if inv.y >= 96 then
+      add(damage, { x = inv.x, y = inv.y, sp = 48, cnt = -1 })
+      add(damage, { x = inv.x + 8, y = inv.y, sp = 49, cnt = -1 })
+   end
 end
 
 function num_invs(row)
- local cnt=0
- for i in all(invs) do
-  if (i.row==row) cnt+=1
- end
- return cnt
+   local cnt = 0
+   for i in all(invs) do
+      if (i.row == row) cnt += 1
+   end
+   return cnt
 end
 
 function update_invs()
- if inv_wave_dly_cnt>0 then
-  inv_wave_dly_cnt-=1
-  if #damage>0 then
-   del(damage,damage[1])
-   if #damage>0 and
-      (damage[1].sp>=48) 
-   then
-    del(damage,damage[1])
+   if inv_wave_dly_cnt > 0 then
+      inv_wave_dly_cnt -= 1
+      if #damage > 0 then
+         del(damage, damage[1])
+         if #damage > 0
+               and (damage[1].sp >= 48) then
+            del(damage, damage[1])
+         end
+      end
+      return
    end
-  end
-  return
- end
- 
- inv_dly_cnt-=1
- if inv_dly_cnt<=0 then
-  inv_dly_cnt=inv_row_dly
-	 for inv in all(invs) do
-	  if inv.row==inv_rows[inv_row] then
-	   inv_update(inv)
-	  end
-  end
 
-	 for inv in all(invs) do
-		 if inv.state==is_exp then
-		  inv.expcnt-=1
-		  if (inv.expcnt<0) then
-		   if (num_invs(inv.row)==1) del(inv_rows,inv.row)
-		   score+=it_scr[inv.itype]
-		   del(invs,inv)
-		  end
-		 end
-	 end
-	 
-	 inv_row+=1
-	 if inv_row>#inv_rows then
-	  if base.state==bs_intact then
-		  --play inv sound
-		  if #saucers==0 then
-		   sfx(inv_sfxs[inv_sfx],inv_sfx_chl)
-		  end
-		  inv_sfx+=1 
-		  if (inv_sfx>#inv_sfxs) inv_sfx=1
-	  end
-	  
-	  inv_dly_cnt=max(inv_row_dly,#invs-1)
-	  for i in all(invs) do
-	   if i.y>119 then
-	    if base.state==bs_intact then
- 	    lives=1 
-	     base.state=bs_exp
-		    base.exp_cnt=base_exp_cnt
-		    base.sp=54
-		   end
-	   end
-	   if (i.dx==1 and i.x>114)
-    or (i.dx==-1 and i.x<0) then
-	    for i2 in all(invs) do
-			    i2.dropnext=true
-			  end
-			  break
-			 end
-		 end
-	  inv_row=1
-	 end
- end	
- 
- if #invs<2 then
-  if #invs>0 then
-   if invs[1].dx==1 then
-    inv_spd=3
-   else
-    inv_spd=2
+   inv_dly_cnt -= 1
+   if inv_dly_cnt <= 0 then
+      inv_dly_cnt = inv_row_dly
+      for inv in all(invs) do
+         if inv.row == inv_rows[inv_row] then
+            inv_update(inv)
+         end
+      end
+
+      for inv in all(invs) do
+         if inv.state == is_exp then
+            inv.expcnt -= 1
+            if (inv.expcnt < 0) then
+               if (num_invs(inv.row) == 1) del(inv_rows, inv.row) score += it_scr[inv.itype]
+               del(invs, inv)
+            end
+         end
+      end
+
+      inv_row += 1
+      if inv_row > #inv_rows then
+         if base.state == bs_intact then
+            --play inv sound
+            if #saucers == 0 then
+               sfx(inv_sfxs[inv_sfx], inv_sfx_chl)
+            end
+            inv_sfx += 1
+            if (inv_sfx > #inv_sfxs) inv_sfx = 1
+         end
+
+         inv_dly_cnt = max(inv_row_dly, #invs - 1)
+         for i in all(invs) do
+            if i.y > 119 then
+               if base.state == bs_intact then
+                  lives = 1
+                  base.state = bs_exp
+                  base.exp_cnt = base_exp_cnt
+                  base.sp = 54
+               end
+            end
+            if (i.dx == 1 and i.x > 114)
+                  or (i.dx == -1 and i.x < 0) then
+               for i2 in all(invs) do
+                  i2.dropnext = true
+               end
+               break
+            end
+         end
+         inv_row = 1
+      end
    end
-   bmb_spwn_rate=bmb_init_spwn_rate*10
-  else
-   sfx(-1,inv_sfx_chl)
-   wave+=1
-   set_wave(wave)
-  end
-  inv_row_dly=1
- elseif #invs<3 then
-  inv_spd=3.5
-  inv_row_dly=2
-  bmb_spwn_rate=bmb_init_spwn_rate*6
- elseif #invs<6 then
-  inv_spd=2.5
-  inv_row_dly=2
-  bmb_spwn_rate=bmb_init_spwn_rate*4
- elseif #invs<12 then
-  inv_spd=2
-  inv_row_dly=2
- elseif #invs<17 then
-  inv_spd=1.5
-  inv_row_dly=3
- end
+
+   if #invs < 2 then
+      if #invs > 0 then
+         if invs[1].dx == 1 then
+            inv_spd = 3
+         else
+            inv_spd = 2
+         end
+         bmb_spwn_rate = bmb_init_spwn_rate * 10
+      else
+         sfx(-1, inv_sfx_chl)
+         wave += 1
+         set_wave(wave)
+      end
+      inv_row_dly = 1
+   elseif #invs < 3 then
+      inv_spd = 3.5
+      inv_row_dly = 2
+      bmb_spwn_rate = bmb_init_spwn_rate * 6
+   elseif #invs < 6 then
+      inv_spd = 2.5
+      inv_row_dly = 2
+      bmb_spwn_rate = bmb_init_spwn_rate * 4
+   elseif #invs < 12 then
+      inv_spd = 2
+      inv_row_dly = 2
+   elseif #invs < 17 then
+      inv_spd = 1.5
+      inv_row_dly = 3
+   end
 end
 
 function draw_invs()
- for inv in all(invs) do
-  inv_draw(inv)
- end
+   for inv in all(invs) do
+      inv_draw(inv)
+   end
 end
 
 function inv_draw(inv)
- --print_table(inv)
- --stop()
- if (inv.state==is_alive) spr(inv.ispr,inv.x,inv.y,inv_size[inv.itype],1)
- if (inv.state==is_exp) then
-  spr(10,inv.x,inv.y,2,1) 
- end
+   --print_table(inv)
+   --stop()
+   if (inv.state == is_alive) spr(inv.ispr, inv.x, inv.y, inv_size[inv.itype], 1)
+   if (inv.state == is_exp) then
+      spr(10, inv.x, inv.y, 2, 1)
+   end
 end
 
 function new_bomb(inv)
-  -- pick a random bomb type
-  local bmb_typ=
-   bmb_typs[
-     flr(rnd(#bmb_typs))+1] 
+   -- pick a random bomb type
+   local bmb_typ = bmb_typs[flr(rnd(#bmb_typs)) + 1]
 
-  local bomb={x=inv.x+5,
-												y=inv.y+8,
-												typ=bmb_typ.num,
-												isp=bmb_typ.sp,
-												sp=bmb_typ.sp,
-												h=bmb_typ.h}
-  add(bmbs,bomb)
+   local bomb = {
+      x = inv.x + 5,
+      y = inv.y + 8,
+      typ = bmb_typ.num,
+      isp = bmb_typ.sp,
+      sp = bmb_typ.sp,
+      h = bmb_typ.h
+   }
+   add(bmbs, bomb)
 end
 
 function update_bombs()
- for b in all(bmbs) do
-  b.y+=bmb_spd
-  b.sp+=1
-  if (b.sp>b.isp+3) b.sp=b.isp
-  
-  -- check for collisions with bunkers
-  for y=b.y,b.y+b.h do
-   if b.y>123 or
-      pget(b.x,y)==11 
-   then -- green: hit bunkers
-    add(damage,{x=b.x-2,y=y-4,sp=22,cnt=dmg_exp_cnt})
-    del(bmbs,b)
-    break
+   for b in all(bmbs) do
+      b.y += bmb_spd
+      b.sp += 1
+
+      if (b.sp > b.isp + 3) b.sp = b.isp
+      -- check for collisions with bunkers 
+      for y = b.y, b.y + b.h do
+         if b.y > 123 or pget(b.x, y) == 11 then
+            -- green: hit bunkers
+            add(damage, { x = b.x - 2, y = y - 4, sp = 22, cnt = dmg_exp_cnt })
+            del(bmbs, b)
+            break
+         end
+      end
+
+      -- check for collisions with base
+      if base.state == bs_intact
+            and b.y > 116
+            and b.x >= base.x - 2
+            and b.x < base.x + 10 then
+         base.state = bs_exp
+         base.exp_cnt = base_exp_cnt
+         base.sp = 54
+         del(bmbs, b)
+         sfx(6, base_sfx_chl)
+      end
    end
-  end
-  
-  -- check for collisions with base
-  if base.state==bs_intact and
-     b.y>116 and
-     b.x>=base.x-2 and 
-     b.x<base.x+10 then
-   base.state=bs_exp
-   base.exp_cnt=base_exp_cnt
-   base.sp=54
-   del(bmbs,b)
-   sfx(6,base_sfx_chl)
-  end
- end
 end
 
 function draw_bombs()
- for b in all(bmbs) do
-  spr(b.sp,b.x,b.y)
- end
+   for b in all(bmbs) do
+      spr(b.sp, b.x, b.y)
+   end
 end
 
 -->8
 -- saucer --
 function init_saucers()
- -- saucer states
- ss_intact=0
- ss_exp=1
- 
- saucers={}
- 
- saucer_spwn_rate=1500
- saucer_spd=0.45
- saucer_scores={150,200,300}
+   -- saucer states
+   ss_intact = 0
+   ss_exp = 1
+
+   saucers = {}
+
+   saucer_spwn_rate = 1500
+   saucer_spd = 0.45
+   saucer_scores = { 150, 200, 300 }
 end
 
 function new_saucer()
- local _x,_dx
- if flr(rnd(2))==1 then
-  _x=128
-  _dx=-1
- else
-  _x=-16
-  _dx=1
- end
- local s={x=_x,y=7,
-          dx=_dx,spd=saucer_spd,
-          state=ss_intact}
- add(saucers,s)
- sfx(7,sfx_inv_chl)
+   local _x, _dx
+   if flr(rnd(2)) == 1 then
+      _x = 128
+      _dx = -1
+   else
+      _x = -16
+      _dx = 1
+   end
+   local s = {
+      x = _x, y = 7,
+      dx = _dx, spd = saucer_spd,
+      state = ss_intact
+   }
+   add(saucers, s)
+   sfx(7, inv_sfx_chl)
 end
 
 function update_saucers(s)
- if #saucers==0
-    and flr(rnd(saucer_spwn_rate))==0 
- then
-  new_saucer()
- end
-  
- for s in all(saucers) do
-  if s.state==ss_intact then
-	  s.x+=s.spd*s.dx
-	  if s.x<-16 or s.x>143 then
-	   del(saucers,s)
-    sfx(-1,sfx_inv_chl)
-	  end
-	 elseif s.state==ss_exp then
-	  s.expcnt-=1
-	  if s.expcnt<=0 then
-	   s.scrcnt-=1
-	   if s.scrcnt<=0 then
-     score+=s.score
-	    del(saucers,s)
-	    sfx(-1,sfx_inv_chl)
-				end	 
-	  end
-	 end
- end
+   if #saucers == 0
+         and flr(rnd(saucer_spwn_rate)) == 0 then
+      new_saucer()
+   end
+
+   for s in all(saucers) do
+      if s.state == ss_intact then
+         s.x += s.spd * s.dx
+         if s.x < -16 or s.x > 143 then
+            del(saucers, s)
+            sfx(-1, inv_sfx_chl)
+         end
+      elseif s.state == ss_exp then
+         s.expcnt -= 1
+         if s.expcnt <= 0 then
+            s.scrcnt -= 1
+            if s.scrcnt <= 0 then
+               score += s.score
+               del(saucers, s)
+               sfx(-1, inv_sfx_chl)
+            end
+         end
+      end
+   end
 end
 
 function draw_saucers()
- for s in all(saucers) do
-  if s.state==ss_intact then
-   spr(12,s.x,s.y,2,1)
-  elseif s.state==ss_exp then
-   if s.expcnt>0 then
-    spr(44,s.x-3,s.y,3,1)
-   else
-    print(s.score,s.x+4,s.y+2,8)  
-    --stop()
+   for s in all(saucers) do
+      if s.state == ss_intact then
+         spr(12, s.x, s.y, 2, 1)
+      elseif s.state == ss_exp then
+         if s.expcnt > 0 then
+            spr(44, s.x - 3, s.y, 3, 1)
+         else
+            print(s.score, s.x + 4, s.y + 2, 8)
+            --stop()
+         end
+      end
    end
-  end
- end
 end
+
 __gfx__
 0000000080008008000c00000c000000000c00000c0000000000eeee000000000000eeee00000000000007000700000000000888888000000000060000000000
 00000000008000800c00c000c00c00000000c000c00000000eeeeeeeeee000000eeeeeeeeee00000007000707000700000088888888880000000666000000000
