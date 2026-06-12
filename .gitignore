@@ -1,0 +1,11 @@
+backup/*
+demos/*
+activity_log.txt
+config.txt
+log.txt
+sdl_controllers.txt
+bbs/.DS_Store
+carts/.DS_Store
+carts/*.png
+carts/demos/*
+.DS_Store

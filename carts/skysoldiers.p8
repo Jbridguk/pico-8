@@ -1,0 +1,1588 @@
+pico-8 cartridge // http://www.pico-8.com
+version 43
+__lua__
+function set_diff(d)
+	-- **************************
+	-- ** game difficulty vars **
+	-- **************************
+ 
+	-- para spwn rate	(< is hrdr)	
+	paraspwnrt=100 
+ if (d==2) paraspwnrt=95 
+ if (d==3) paraspwnrt=90
+ if (d==4) paraspwnrt=85
+ if (d==5) paraspwnrt=80
+ if (d==6) paraspwnrt=75
+ if (d==7) paraspwnrt=70
+ if (d==8) paraspwnrt=65
+ if (d==9) paraspwnrt=60
+ if (d>=10) paraspwnrt=50
+	
+	-- para speed increment
+	-- how fast reach term vel
+	-- > is hrdr		
+ para_spd_inc=0.05
+ if (d==2) para_spd_inc=0.055
+ if (d==3) para_spd_inc=0.06
+ if (d==4) para_spd_inc=0.065
+ if (d==5) para_spd_inc=0.07
+ if (d==6) para_spd_inc=0.075
+ if (d==7) para_spd_inc=0.08
+ if (d==8) para_spd_inc=0.085
+ if (d==9) para_spd_inc=0.09
+ if (d>=10) para_spd_inc=0.1
+ 
+ para_drift=0
+ if (d==2) para_drift=0
+ if (d==3) para_drift=0
+ if (d==4) para_drift=0.2
+ if (d==5) para_drift=0.3
+ if (d==6) para_drift=0.3
+ if (d==7) para_drift=0.35
+ if (d==8) para_drift=0.4
+ if (d==9) para_drift=0.45
+ if (d>=10) para_drift=0.5
+
+	-- para terminal velocity
+	-- > is hrdr
+ term_vel=3
+ if (d==2) term_vel=3.05
+ if (d==3) term_vel=3.1
+ if (d==4) term_vel=3.15
+ if (d==5) term_vel=3.2
+ if (d==6) term_vel=3.25
+ if (d==7) term_vel=3.3
+ if (d==8) term_vel=3.35
+ if (d==9) term_vel=3.4
+ if (d>=10) term_vel=3.5
+
+	-- speed when para hits ground
+	-- that is lethal
+	-- > is hrdr
+ kill_spd=1.5
+ if (d==2) kill_spd=1.55
+ if (d==3) kill_spd=1.60
+ if (d==4) kill_spd=1.65
+ if (d==5) kill_spd=1.7
+ if (d==6) kill_spd=1.75
+ if (d==7) kill_spd=1.8
+ if (d==8) kill_spd=1.85
+ if (d==9) kill_spd=1.9
+ if (d>=10) kill_spd=2
+
+ -- max choppers (> is hrdr)
+ maxchops=5
+ if (d==2) maxchops=6
+ if (d==3) maxchops=6
+ if (d==4) maxchops=7
+ if (d==5) maxchops=7
+ if (d==6) maxchops=8
+ if (d==7) maxchops=8
+ if (d==8) maxchops=9
+ if (d==9) maxchops=9
+ if (d>=10) maxchops=10
+
+	-- chopper spwn rate	(< is hrdr)	
+ chopspwnrt=50
+ if (d==2) chopspwnrt=49
+ if (d==3) chopspwnrt=48
+ if (d==4) chopspwnrt=47
+ if (d==5) chopspwnrt=46
+ if (d==6) chopspwnrt=45
+ if (d==7) chopspwnrt=43
+ if (d==8) chopspwnrt=41
+ if (d==9) chopspwnrt=38
+ if (d>=10) chopspwnrt=35
+
+ -- chopper speed (> is hrdr)
+ chopspd=1
+ if (d==2) chopspd=1.1
+ if (d==3) chopspd=1.2
+ if (d==4) chopspd=1.3
+ if (d==5) chopspd=1.4
+ if (d==6) chopspd=1.5
+ if (d==7) chopspd=1.6
+ if (d==8) chopspd=1.7
+ if (d==9) chopspd=1.8
+ if (d>=10) chopspd=2
+ 
+ -- max bombers (> is hrdr)
+ maxbmbrs=2
+ if (d==2) maxbmbrs=2
+ if (d==3) maxbmbrs=2
+ if (d==4) maxbmbrs=3
+ if (d==5) maxbmbrs=3
+ if (d==6) maxbmbrs=3
+ if (d==7) maxbmbrs=4
+ if (d==8) maxbmbrs=4
+ if (d==9) maxbmbrs=4
+ if (d>=10) maxbmbrs=5
+ 
+ -- bomber speed (> is hrdr)
+ bmbrspd=2
+ if (d==2) bmbrspd=2.2
+ if (d==3) bmbrspd=2.4
+ if (d==4) bmbrspd=2.6
+ if (d==5) bmbrspd=2.8
+ if (d==6) bmbrspd=3
+ if (d==7) bmbrspd=3.2
+ if (d==8) bmbrspd=3.4
+ if (d==9) bmbrspd=3.6
+ if (d>=10) bmbrspd=4
+ 
+	-- bomber spwn rate	(< is hrdr)	
+ bmbrspwnrt=500
+ if (d==2) bmbrspwnrt=475
+ if (d==3) bmbrspwnrt=450
+ if (d==4) bmbrspwnrt=425
+ if (d==5) bmbrspwnrt=400
+ if (d==6) bmbrspwnrt=375
+ if (d==7) bmbrspwnrt=350
+ if (d==8) bmbrspwnrt=325
+ if (d==9) bmbrspwnrt=300
+ if (d>=10) bmbrspwnrt=250
+
+ -- chute open speed
+ -- how fast drop with chute open
+ -- > is hrdr
+	ch_open_spd=0.75
+ if (d==2) ch_open_spd=0.8
+ if (d==3) ch_open_spd=0.825
+ if (d==4) ch_open_spd=0.85
+ if (d==5) ch_open_spd=0.875
+ if (d==6) ch_open_spd=0.9
+ if (d==7) ch_open_spd=0.925
+ if (d==8) ch_open_spd=0.95
+ if (d==9) ch_open_spd=0.975
+ if (d>=10) ch_open_spd=1.0
+	
+	-- chute open height
+	-- > is hrdr
+	ch_open_hght=10
+ if (d==2) ch_open_hght=10
+ if (d==3) ch_open_hght=10
+ if (d==4) ch_open_hght=11
+ if (d==5) ch_open_hght=11
+ if (d==6) ch_open_hght=11
+ if (d==7) ch_open_hght=12
+ if (d==8) ch_open_hght=12
+ if (d==9) ch_open_hght=12
+ if (d>=10) ch_open_hght=13
+	
+	-- **************************
+end
+
+function init_game()
+ t=true
+ f=false
+  	
+ -- gun
+ angle = 0.25 -- in radians
+
+ bullets={}
+ paras={}
+ choppers={}
+ bombers={}
+ bombs={}
+	parts={}
+
+ -- paras in pos 1 l,r
+ para_at_pos1={} 
+ add(para_at_pos1, {paras={}}) 
+ add(para_at_pos1, {paras={}}) 
+
+ -- paras in pos 2 l,r
+ para_at_pos2={} 
+ add(para_at_pos2, {paras={}}) 
+ add(para_at_pos2, {paras={}}) 
+
+	can_fire=t
+
+ --set_diff(1) -- game difficulty
+ 
+ score=0
+ 
+ scrtxt={}
+ 
+ wave=0
+ wave_rem=0
+
+ game_state=gs_running 
+end
+
+function _init()
+ if cartdata("jbridguk_skysoldiers_1p1") then
+  hiscore=dget(1)
+ else
+  hiscore=0
+  dset(1,hiscore)
+ end
+ 
+ x0 = 63
+ y0 = 102
+ 
+ ground=112
+
+ gravity=0.05
+
+ -- gun
+ len = 5      -- turret len
+ tsp = 0.025  -- turret speed
+ thickness=2  -- turret thick
+ --
+   
+ bspeed=2 -- bullet speed
+  
+ -- para hit box
+ para_hb={l=2,r=4,t=4,b=7}
+
+ -- para pos 1 l,r
+ para_pos1={51,70}
+ para_pos2={48,73}
+
+ -- choppers
+ chopspr={24,26,28,42}
+ chopexpspr=32
+ numchopexpspr=10
+ 
+ -- bombers
+ bmbrspr=44
+ bmbrexpspr=48
+ numbmbrexpspr=15
+  
+ -- fall sprites
+ fallspr={9,10,9,11}
+ 
+ -- death sprites
+ dthspr={18,19,20,17}
+
+ -- exploding man sprites
+ xpspr={21,22,23}
+
+ -- walking sprites
+ wlkspr={10,12}
+   
+ -- chute hit box
+ chute_hb={l=0,r=6,t=4,b=7}
+ 
+ -- chute states
+ cs_closed=0
+ cs_open=1
+ cs_gone=2
+  
+ -- bombs	
+	bomb_land=104
+	bomb_xtarg=14
+	bomb_hbs={
+	 {l=1,t=3,r=6,b=6}, -- horiz
+	 {l=1,t=1,r=6,b=6}, -- 45deg
+	 {l=2,t=1,r=5,b=6}  -- down
+	}
+	bomb_expspr=66
+	bomb_num_expspr=10
+			
+	-- particles
+	pgrav=0.2
+ px_slow=0.97
+
+ -- game states
+ gs_running=0
+ gs_ending=1
+ gs_over=2 
+
+ -- scoring
+ para_w_chute_pts=50
+ para_no_chute_pts=100
+ chute_pts=10
+ chop_pts=50
+ bmbr_pts=150
+ bomb_pts=120
+
+ para_per_wave=50
+ wave_delay_frames=150
+ 	
+ -- test vars
+ px=0
+ frame_adv=f
+ frame_skip=0
+ pause=f
+  
+ init_game()
+ 
+ -- start from game over 
+ game_state=gs_over 
+end
+
+function update_main()
+ if frame_adv then
+  frame_adv = f
+  goto cont
+ end
+
+ if pause then
+  return
+end
+
+ ::cont::
+ 
+ move_bullets() 
+ move_paras()
+
+ upd_chops()
+ upd_bmbrs()
+ upd_bombs()
+end
+
+function _update()   
+ if score > hiscore then
+  hiscore=score
+ end
+
+ btn_press()
+
+ if game_state==gs_running then
+  move_gun()
+   
+  if wave_rem<1 then
+   wave_rem=0
+   local p
+   local abp=0 -- #airborne paras 
+   for p in all(paras) do
+    if (not(p.landed)) abp+=1
+   end  
+   if (abp==0) inc_wave()
+  end
+ end
+ 
+ if #parts>0 then
+  --game_state==gs_ending then
+	 update_parts()
+	end
+	
+ update_main()
+ 
+ if game_state==gs_running then
+  if wave_rem>0 then
+	  spawn_chops()
+	  spawn_bmbrs() 
+	  spawn_paras()   	
+	 end
+	 
+	 check_collisions()  
+ end
+end
+
+function draw_gun()
+ --draw gun base + turret
+ spr(7,56,104,2,1)
+ line(x0,y0,x1,y1,7)  -- color 7 = white
+ line(x0+1,y0,x1+1,y1,7)
+ line(x0,y0+1,x1,y1+1,7)
+ line(x0+1,y0+1,x1+1,y1+1,7)
+
+ --rect(58,96,69,111,8)
+end
+
+function _draw()
+ local col=12 -- blue sky
+ if game_state==gs_over then
+  col=2 -- game over col
+ end
+ cls(col) 
+ 
+ map(0,0,0,0,16,16)
+
+ if game_state==gs_running then
+  draw_gun()
+ end
+ 
+ if #parts>0 then
+  --game_state==gs_ending then
+  -- draw explosion particles
+  draw_parts()
+ end
+    
+ -- draw bullets
+ for b in all(bullets) do
+  pset(b.x,b.y)
+ end
+    
+ draw_paras()
+	draw_chops()
+	draw_bmbrs()
+	draw_bombs()
+	
+	if game_state==gs_over then
+  map(2,17,15,20,13,2)
+	 shprint("game over",46,58,8)
+	 shprint("press ❎ to start",30,80,8)
+	end
+	
+	-- print score
+	local dscr="00000"..tostr(score,0x2)
+	dscr=sub(dscr,#dscr-5,#dscr)
+	shprint(dscr,126-#dscr*4,121,7) 
+
+ -- print hiscore
+ local dhscr="00000"..tostr(hiscore,0x2)
+	dhscr=sub(dhscr,#dhscr-5,#dhscr)
+ shprint("hi:"..dhscr,70-#dhscr*4,121,7)
+
+ -- print men remaining in wave
+	shprint(wave_rem,2,121,7) 
+ 	
+ draw_scrollers()	
+ 
+ --print("wave:"..wave,20,122,8)
+end
+
+-->8
+-- gun, bullets, paras and collisions
+function btn_press()
+ if game_state==gs_over then
+  if btnp(❎) then
+   init_game()
+  end
+  return
+ end
+ 
+ --if btnp(3) then
+ -- pause=not pause  
+ --end
+ 
+ if btn(2) then
+  --print("adv",40,40)
+  frame_adv=t
+ end
+ 
+ if btn(0) then
+  angle += tsp
+	 if angle > 0.475 then
+	  angle = 0.475
+	 end
+ end 
+ if btn(1) then
+  angle -= tsp
+	 if angle < 0.025 then
+			angle = 0.025
+		end
+ end
+ 
+ if btn(4) and can_fire then
+  local b = {ngl=angle,x=x1,y=y1}
+  add(bullets,b)
+  sfx(0)
+  can_fire=f
+ elseif not btn(4) then
+  can_fire=t
+ end
+ 
+end
+
+function move_gun()
+ x1 = x0 + cos(angle) * len
+ y1 = y0 + sin(angle) * len
+end
+
+function move_bullets()
+ for s = 1,bspeed do
+	 for b in all(bullets) do
+	  b.x+=cos(b.ngl)
+	  b.y+=sin(b.ngl)
+	  
+	  if (b.x < 0) 
+	   or (b.x > 127)
+	   or (b.y < 0) then
+	   del(bullets,b)
+	  end
+	 end
+	 check_bul_colls()
+	end
+end
+
+function new_para(px,py)
+ if (px > para_pos1[1]) and (px < para_pos1[2]) then
+  if rnd(1) > 0.5 then
+   px=para_pos1[2] -- right side
+  else
+   px=para_pos1[1] -- left side
+  end
+ end
+ 
+ if (px > 121) then
+  px=121
+ end
+
+ local lside=(px<=para_pos1[1]) and 1 or 2
+ local dx=rnd(para_drift*2)-para_drift
+
+ return {
+  x=px,
+  y=py,
+  dx=dx,
+  chute=cs_closed,
+  spd=0.1,
+  landed=f,
+  side=lside, -- 1=l,2=r
+  fspr=1,  -- fall spr idx
+  dspr=1,  -- dying spr idx
+  wspr=1,  -- walking spr idx
+  wframe=0,-- walking frame
+  dying=f,
+  expldng=f,
+  walking=f, 
+  climb=0, -- no of steps to climb
+  xspr=1
+ }
+end
+
+function spawn_paras()
+ -- spawn paras
+ for chp in all(choppers) do
+	 if (newp==nil or
+	   flr(rnd(paraspwnrt))==0)
+	  and chp.x > 0 
+	  and chp.x < ground 
+	 then
+			px=chp.x+4
+	
+	  newp = new_para(flr(px),chp.y+8)
+	  add(paras,newp)
+	 end 
+	end 
+end
+
+function add_para_at_pos1(p)
+ local paras={p}
+end
+
+function para_target(p)
+	if #para_at_pos1[p.side].paras > 2
+	and p.y <= ground-7 then
+		return 61 -- middle
+	end
+	
+	if #para_at_pos1[p.side].paras < 2 then
+	 return para_pos1[p.side]
+	end
+	
+	if #para_at_pos2[p.side].paras >= 2 then
+	 return para_pos1[p.side]
+	end 
+		
+	return para_pos2[p.side]
+end
+
+function game_ending()
+ if game_state==gs_running then
+  game_state=gs_ending
+ end
+ draw_gun()
+ create_parts(58,96,69,111)
+ sfx(1)
+end
+
+function move_paras()
+ -- move paras
+ for p in all(paras) do
+  if p.chute != cs_open then
+   p.spd += para_spd_inc
+   if p.spd > term_vel then
+    p.spd = term_vel
+   end
+  end 
+  
+  if p.chute==cs_closed then
+   if p.y > ch_open_hght + rnd(20) then
+    p.chute = cs_open
+   end
+  end
+
+  if p.chute==cs_open and
+     p.spd > ch_open_spd then
+   p.spd -= 0.05
+   if p.spd < ch_open_spd then
+    p.spd= ch_open_spd
+   end 
+  end
+  
+  if p.chute==cs_open then
+   local px=p.x+p.dx
+   if ((px > para_pos1[1]) and 
+       (px < para_pos1[2]))
+   then
+    p.dx=-p.dx
+    px=p.x+p.dx
+   end
+     
+   if px>=0 and px<=121 then
+    p.x=px
+   end
+  end
+  
+  p.y=p.y+p.spd
+  
+  if p.y >= ground then
+   if p.spd >= kill_spd then
+    p.dying=t
+    sfx(6)
+   end  
+   
+   if not p.dying 
+     and not p.landed then
+	   para_set_landed(p,t)
+	  end
+
+   p.y=ground
+	  p.spd=0 
+  end 
+  
+  if p.chute==cs_gone then
+   p.fspr+=1
+   if (p.fspr>4) p.fspr=1
+  end
+       
+		if game_state==gs_running
+		  and p.walking then
+			p.wframe += 1
+			if p.wframe % 4 == 0 then
+				p.wspr += 1
+				if p.wspr > #wlkspr then
+				 p.wspr = 1
+				end
+	
+	   local target=para_target(p)
+			 local step=1
+			 local dx=0
+			 if p.x < target then
+			  dx = step
+			 elseif p.x > target then
+			  dx = -step
+			 end
+			  
+			 p.x += dx
+			
+			 if abs(p.x - target) < 1 then
+			  p.walking=f
+			  p.x=target
+			  if target == 61 then
+			    game_ending()
+			  end
+			  if target == para_pos1[p.side] then
+			   add(para_at_pos1[p.side].paras, p)
+			   if #para_at_pos1[p.side].paras >= 2 then
+			    p.climb = 4
+			   end
+			  else
+			   add(para_at_pos2[p.side].paras, p)
+			   if #para_at_pos2[p.side].paras >= 2 then
+			    p.climb = 4
+			   end
+			  end
+			 end
+			end
+		end
+		
+		if game_state==gs_running
+		  and p.climb > 0 then
+		 p.y -= 1
+		 p.climb -= 1
+		 if p.climb==0 then
+		  if (p.y <= ground-7) 
+		  or (p.x==para_pos2[p.side]) then 
+		   p.walking=true
+		  end
+		 end
+		end
+ end -- for p in all(paras)
+end
+
+function draw_paras()
+ --print("draw paras",1,1,0)
+ for p in all(paras) do
+  if p.walking then
+   local rev=p.dir==1
+   local wspr=wlkspr[p.wspr]
+   spr(wspr,p.x,p.y,1,1,rev)
+  elseif p.expldng then
+   if p.xspr==4 then
+    del(paras,p)
+    if (wave_rem>0) wave_rem-=1
+   else
+    local xspr=xpspr[p.xspr]
+    spr(xspr,p.x,p.y)
+    p.xspr+=1
+   end
+  elseif p.chute == cs_closed
+      or p.landed 
+   then
+   spr(9,p.x,p.y)
+  elseif p.chute == cs_open then
+   spr(14,p.x,p.y-8)
+   spr(30,p.x,p.y)
+  elseif p.chute == cs_gone then
+   if p.dying then
+    if p.dspr==5 then
+     del(paras,p)
+     if (wave_rem>0) wave_rem-=1
+    else
+     local dspr=dthspr[p.dspr]
+     spr(dspr,p.x,p.y)
+     p.dspr+=1
+    end
+   else
+    local fspr = fallspr[p.fspr]
+    spr(fspr,p.x,p.y)
+   end
+  end
+ end
+end
+
+function check_para_colls(b)
+ -- check for paras collisions paras
+ for p in all(paras) do
+  if (not p.landed) and
+     (not p.dying) then
+   if (b.x>=p.x+para_hb.l) and
+      (b.x<=p.x+para_hb.r) and
+      (b.y>=p.y+para_hb.t) and
+      (b.y<=p.y+para_hb.b) 
+   then -- bullet hit para
+    p.expldng=t
+    if p.chute==cs_open then
+     addscore(para_w_chute_pts)
+    else
+     addscore(para_no_chute_pts)
+    end
+    --p.spd=0
+   end
+   
+   if (p.chute==cs_open) and
+      (b.x>=p.x+chute_hb.l) and
+      (b.x<=p.x+chute_hb.r) and
+      (b.y>=p.y-8+chute_hb.t) and
+      (b.y<=p.y-8+chute_hb.b) 
+   then -- bullet hit chute
+    p.chute=cs_gone
+    addscore(chute_pts)
+   end
+  end 
+ end
+end
+
+function check_chop_colls(b)
+ -- check for chopper collisions
+ for c in all(choppers) do
+  local hb1=chop_hb1(c)
+  local hb2=chop_hb2(c)
+    
+  if ((b.x>=hb1.l) and
+      (b.x<=hb1.r) and
+      (b.y>=hb1.t) and
+      (b.y<=hb1.b))
+  or (b.x>=hb2.l) and
+     (b.x<=hb2.r) and
+     (b.y>=hb2.t) and
+     (b.y<=hb2.b) then
+   c.exp=true -- exploding
+   addscore(chop_pts)
+   sfx(4)
+  end
+ end
+end
+
+function check_bmbr_colls(b)
+ -- check for bomber collisions
+ for bm in all(bombers) do
+  local hb1=bmbr_hb(bm)
+    
+  if ((b.x>=hb1.l) and
+      (b.x<=hb1.r) and
+      (b.y>=hb1.t) and
+      (b.y<=hb1.b)) then
+   bm.exp=true -- exploding
+   addscore(bmbr_pts)
+   sfx(5)
+  end
+ end
+end
+
+function check_bomb_colls(b)
+ for bomb in all(bombs) do
+  local hb=bomb_hb(bomb)
+    
+  if ((b.x>=hb.l) and
+      (b.x<=hb.r) and
+      (b.y>=hb.t) and
+      (b.y<=hb.b)) then
+   bomb.exp=true -- exploding
+   addscore(bomb_pts)
+   create_parts(hb.l,hb.t,
+                hb.r,hb.b)
+   sfx(3)
+   --stop("boom")
+  end
+ end
+end
+
+function check_bul_colls()
+ for b in all(bullets) do
+  check_para_colls(b)
+  check_chop_colls(b)
+  check_bmbr_colls(b)
+  check_bomb_colls(b)  
+ end
+end
+
+function para_set_landed(p,landed)
+ p.landed=landed
+ 
+ if not landed then
+  return
+ end
+ 
+ p.dx=0
+ 
+ local para_landed=0
+
+ for p2 in all(paras) do
+  if (p2.landed)
+  and p2.side==p.side then
+   para_landed+=1
+  end
+ end
+  
+ if para_landed >= 4 then
+  -- start paras walking
+  for p2 in all(paras) do
+   if p2.landed
+     and not p2.walking
+     and p2.climb==0
+     and p2.side==p.side 
+   then
+    local inpos=f -- para in position
+    for p3 in all(para_at_pos1[side]) do
+     if (p3==p2) inpos=t
+    end
+    for p3 in all(para_at_pos2[side]) do
+     if (p3==p2) inpos=t
+    end
+    if not inpos then
+     p2.walking=t 
+    end
+   end
+  end
+ end
+end
+
+function check_para_on_para_colls()
+ for p in all(paras) do
+  if p.dying then
+   for l in all(paras) do
+	   if (l.landed) and
+	      (l.x+para_hb.l >= p.x) and
+	      (l.x+para_hb.r <= p.x+8) 
+    then
+     l.dying=t
+     l.chute=cs_gone
+     para_set_landed(l,f)
+     sfx(6)
+	   end   
+	  end    
+  end
+ end
+end
+
+function check_collisions()
+ check_bul_colls()
+ check_para_on_para_colls()
+end
+-->8
+-- choppers
+function new_chop(cx,cy,cdir)
+ return {
+  x = cx,
+  y = cy,
+  dir = cdir,
+  spd = chopspd,
+  spri=1,
+  exp=false,--exploding
+  expspr=chopexpspr
+ }
+end
+
+function spawn_chops()
+ if (#choppers < maxchops)
+  and (flr(rnd(chopspwnrt))==0) 
+ then
+  local chdir=ceil(rnd(2))
+  local chx=0
+  if chdir==1 then
+   chdir=-1 -- left
+   chx=128
+  else
+   chdir=1 -- right
+  end
+  
+  add(choppers
+    	,new_chop(
+  	    chx,1+flr(rnd(1)*8)
+  	    ,chdir)
+  	  ) 
+	end
+end
+
+function upd_chops()
+ for ch in all(choppers) do
+  if (ch.exp) goto cont
+  
+  ch.spri+=1
+  if (ch.spri>4) ch.spri=1
+  
+  ch.x = ch.x + (ch.dir * ch.spd)
+  if (ch.x < -16)
+   or (ch.x > 144) 
+  then
+   del(choppers,ch)
+  end
+  
+  ::cont::
+ end
+end
+
+function draw_chops()
+ for ch in all(choppers) do
+  local rev=(ch.dir==1)
+
+  if ch.exp then --exploding
+   local ofs=0
+   if (rev) ofs=8
+   spr(ch.expspr,ch.x+ofs,ch.y,1,1,false)
+   ch.expspr+=1
+   if ch.expspr >= chopexpspr+numchopexpspr then
+    del(choppers,ch)
+   end
+  else
+   local cspr=chopspr[ch.spri]
+   spr(cspr,ch.x,ch.y,2,1,rev)
+  
+	  --draw hitboxes
+	  --local hb1=chop_hb1(ch)
+	  --local hb2=chop_hb2(ch)
+	  --rect(hb1.l,hb1.t,hb1.r,hb1.b,8)
+	  --rect(hb2.l,hb2.t,hb2.r,hb2.b,8)
+  end
+ end
+end
+
+function chop_hb1(ch)
+ local hb={l=1,r=7,t=2,b=5}
+
+ local ofs
+ if ch.dir==1 then
+  ofs=8
+ else
+  ofs=0
+ end
+ 
+ local rhb={
+    l=ch.x+ofs+hb.l,
+    r=ch.x+ofs+hb.r,
+    t=ch.y+hb.t,
+    b=ch.y+hb.b}
+    
+ return rhb
+end
+
+function chop_hb2(ch)
+ local hb={l=0,r=3,t=2,b=2}
+ 
+ local ofs
+ if ch.dir==1 then
+  ofs=5
+ else
+  ofs=8
+ end
+ 
+ local rhb={
+    l=ch.x+ofs+hb.l,
+    r=ch.x+ofs+hb.r,
+    t=ch.y+hb.t,
+    b=ch.y+hb.b}
+    
+ return rhb
+end
+
+-->8
+-- bombers
+
+function new_bomber(bx,by,bdir)
+  b={
+	  x = bx,
+	  y = by,
+	  dir = bdir,
+	  spd = bmbrspd,
+	  exp=false,--exploding
+	  expspr=bmbrexpspr,
+	  dropx=0,
+	  bdropped=f
+  }
+  b.dropx=calc_drop_x(b)
+  if b.dir==-1 then
+   b.dropx=128-b.dropx
+  end
+  return b
+end
+
+function calc_drop_x(b)
+  local y0 = b.y+5
+  local dy = bomb_land - y0
+  local t = sqrt(dy / (0.5 * gravity))
+  local targ=64-(bomb_xtarg*b.dir)
+  local x_drop = targ - ((b.spd/4) * t)
+
+  return x_drop
+end
+
+function spawn_bmbrs()
+ if (#bombers < maxbmbrs)
+  and (rnd(bmbrspwnrt)<1) 
+ then
+  local bdir=ceil(rnd(2))
+  local bx=-24
+  if bdir==1 then
+   bdir=-1 -- left
+   bx=128+24
+  else
+   bdir=1 -- right
+  end
+  
+  add(bombers
+    	,new_bomber(
+  	    bx,1+flr(rnd(1)*4)
+  	    ,bdir)
+  	  ) 
+	end
+end
+
+function upd_bmbrs()
+ for b in all(bombers) do
+  if (b.exp) goto cont
+    
+  b.x = b.x + (b.dir * b.spd)
+  if (b.x < -24)
+   or (b.x > 128+24) 
+  then
+   del(bombers,b)
+  end
+  
+  if not b.bdropped
+    and (
+     (b.dir==1 and b.x>flr(b.dropx))
+     or (b.dir==-1 and b.x<flr(b.dropx)) 
+     ) then
+   if rnd(5)<1 then 
+     new_bomb(b)
+   end
+   b.bdropped=t
+  end
+  
+  ::cont::
+ end
+end
+
+function draw_bmbrs()
+ for b in all(bombers) do
+  local rev=(b.dir==1)
+
+  if b.exp then --exploding
+   local ofs=0
+   --if (rev) ofs=8
+   spr(b.expspr,b.x+ofs,b.y,3,1,rev)
+   b.expspr+=3
+   if b.expspr >= bmbrexpspr+numbmbrexpspr then
+    del(bombers,b)
+   end
+   goto cont
+  end
+  
+  spr(bmbrspr,b.x,b.y,3,1,rev)
+  
+  --draw hitboxes
+  --local hb=bmbr_hb(b)
+  --rect(hb.l,hb.t,hb.r,hb.b,8)
+  --rect(hb.l,hb.t,hb.r,hb.b,8)
+
+  --print("dropx:"..flr(b.dropx)..",b.x="..b.x..",b.dir="..b.dir,0,8*i,0)
+  ::cont::
+ end
+end
+
+function bmbr_hb(bm)
+  return {l=bm.x,t=bm.y+2,r=bm.x+23,b=bm.y+4}
+end
+-->8
+-- bombs
+
+function new_bomb(bmbr)
+ local dir=bmbr.dir==1 and 1 or -1
+ add(bombs, {
+  x=bmbr.x+11,
+  y=bmbr.y+5,
+  vx=(bmbr.spd/4)*dir,
+  vy=0,
+  ori=1, -- horiz
+  expspr=66
+ })
+ sfx(2)
+end
+
+function upd_bombs()
+ for b in all(bombs) do
+  if b.exp then
+	  b.expspr+=1
+	  if b.expspr > 
+      bomb_expspr+
+      bomb_num_expspr then
+    del(bombs,b)
+	  end   
+	 else
+	  b.x+=b.vx
+	  b.vy+=gravity
+	  b.y+=b.vy
+	  if b.y>bomb_land then
+	   b.y=bomb_land
+	   b.exp=true
+	   game_ending()
+	  end  
+	  local t =abs(b.vx / b.vy)
+	  if t < 0.25 then
+	   b.ori=3 -- down
+	  elseif t < 1 then
+	   b.ori=2 -- 45 deg
+	  else
+	   b.ori=1 -- horiz
+	  end
+	 end
+ end
+end
+
+function bomb_hb(b)
+	local hb=bomb_hbs[b.ori]
+	return {
+	 l=hb.l+b.x,
+	 r=hb.r+b.x,
+	 t=hb.t+b.y,
+	 b=hb.b+b.y
+	}
+end
+
+function draw_bombs()
+ for b in all(bombs) do
+	 local rev=b.vx<0
+  if b.exp then
+   spr(b.expspr,b.x,b.y,1,1,rev)
+  else
+	  local sp
+	  if b.ori==3 then
+	   sp=66 -- down
+	  elseif b.ori==2 then
+	   sp=65 -- 45 deg
+	  else
+	   sp=64 -- horiz
+	  end
+	  spr(sp,b.x,b.y,1,1,rev)
+	  
+	  -- draw hit boxes
+	  --local hb=bomb_hb(b)
+	  --rect(hb.l,hb.t,hb.r,hb.b,8) 
+  end
+ end
+end
+-->8
+-- particle explosion
+function create_parts(
+   xmin,ymin,xmax,ymax)
+
+ rect(xmin,ymin,xmax,ymax,8)
+ 
+ for x=xmin,xmax do
+  for y=ymin,ymax do
+   colour=pget(x,y)
+   --add orange if background
+   if colour==12 then
+    colour=7
+   end
+   dx = rnd(10)-5
+   dy = rnd(10)-7 --more up
+               
+   local p = {
+     x=x,
+     y=y,
+     dx=dx,
+     dy=dy,
+     life=60,
+     colour=colour
+    }
+
+   add(parts,p)
+  end
+ end
+end
+
+function update_parts()
+ for p in all(parts) do
+  if not update_part(p) then
+   del(parts,p)
+  end
+ end
+ 
+ if #parts==0 
+   and game_state==gs_ending then
+  --stop("no more parts - game over")
+  game_state=gs_over
+  scrtxt={}
+  dset(1,hiscore)
+ end
+end
+
+function draw_parts()
+ --print(#parts,0,0,11)
+ 
+ for p in all(parts) do
+  draw_part(p)
+ end
+end
+
+function update_part(p)
+ p.dy=p.dy+pgrav
+ p.dx=p.dx*px_slow
+ p.x+=p.dx
+ p.y+=p.dy
+ p.life-=1
+ if (p.life<0) return false
+ if (p.x<0 or p.x>128) return false
+ if (p.y>128) return false
+ return true
+end
+
+function draw_part(p)
+ pset(p.x,p.y,p.colour)
+end
+
+-->8
+-- utilities
+function shprint(txt,x,y,c)
+ print(txt,x,y+1,0)
+ print(txt,x,y,c) 
+end
+
+function addscore(s)
+ score+=0x.0001*s
+end
+
+function draw_scrollers() 
+ for s in all(scrtxt) do
+  if s.sh then
+   shprint(s.txt,s.x1,s.y1,s.c)
+  else
+   print(s.txt,s.x1,s.y1,s.c)
+  end
+
+  if s.x1==s.x3
+     and s.y1==s.y3 
+  then
+   del(scrtxt,s)
+   goto cont
+  end  
+  
+  if s.x1==s.x2
+     and s.y1==s.y2 
+     and s.pause>0 
+  then
+   if (s.arrived==nil) then 
+    s.arrived=t
+   end
+   
+   s.pause-=1
+   
+   if s.pause==0 then
+    s.x2=s.x3
+    s.y2=s.y3
+   end
+   
+   goto cont
+  end
+  
+  if s.x1<s.x2 then
+   s.x1+=s.xst
+   if (s.x1>s.x2) s.x1=s.x2
+  elseif s.x1>s.x2 then
+   s.x1-=s.xst
+   if (s.x1<s.x2) s.x1=s.x2
+  elseif s.y1<s.y2 then
+   s.y1+=s.yst
+   if (s.y1>s.y2) s.y1=s.y2 
+  elseif s.y1>s.y2 then
+   s.y1-=s.yst
+   if (s.y1<s.y2) s.y1=s.y2
+  end
+  
+  ::cont::
+ end
+end
+
+function inc_wave()
+ wave+=1
+ wave_rem=para_per_wave
+ wave_delay=wave_delay_frames
+ add(scrtxt,{
+   txt="wave "..wave,
+   --x1=155,y1=61,
+   x1=100,y1=61,
+   x2=54,y2=61,
+   pause=30,
+   x3=-30,
+   y3=60,
+   c=8,
+   sh=t, -- shprint
+   xst=1,yst=0})
+ set_diff(wave)   
+end
+__gfx__
+00000000333333333333333333333333777777770000777777770000000000222200000000000000000000000000000000000000000000000000000000000000
+00000000333333333333333333333333777777770000777777770000000002222220000000000000000000000000000000000000000000000000000000000000
+00600600333333333333333333333333777777770000777777770000000022222222000000000000000000000000000000000000000000000000000000000000
+00066000333333333333333333333333777777770000777777770000000222222222200000000000000000000000000000000000000000000000000000000000
+000660004444444444444444444444447777777700007777777700000002222222222000000e0000000e0000000e0000000e0000000000000011100000000000
+00600600444444444444444444444444777777770000777777770000002222222222220000333000003300000003300000330000000000000111110000000000
+00000000444444444444444444444444777777770000777777770000002222222222220000030000000330000033000000030000000000001111111000000000
+00000000444444444444444444444444777777770000777777770000002222222222220000303000003030000030300000030000000000001111111000000000
+00000000000000000000000000000000000000000000000000000000000000005555555550000000055555550000000000555550000000006000006000000000
+000000000000000000000000000000000000000000000000000000000000e0000000700000005000000070000005000000007000000050000600060000000000
+00000000000000000000000000000000000000000000000000000000300000000077777777750000007777777770500000677777777500000600060000000000
+000000000000000000000000000000000000000000000000000e0000000080000700777760000000070077776000000007007777600000000060600000000000
+0000000000000000000000000000000000000000000e00000300000000000003070777760000000007077776000000000707777600000000006e600000000000
+0000000000000000000e000000000000000000000038300000080300000000000067776000000000006777600000000000677760000000000033300000000000
+0000000000838e000033300000838e0000038e000008000000000000000000000105005000000000010500500000000001050050000000000003000000000000
+00000000883838880383800000383800083838800080300000803000008000300011111110000000001111111000000000111111100000000030300000000000
+55555555555555555555555555555555009000900040044000400440004004000040000000400400000555000000000000000000000000555000000500000000
+00007000000070000000990000aa990009a999a904a9449404a9449004a9409004a9009004000040000070000005000000000000000555550000005500000000
+007777770079a9770079aa970a79aa979a7a9a7a4a7a9a744a0a0a744a0a00404900000040000000007777777770500000555555555555555555555500000000
+070a7977079a7997079a779907aa779999a997a949a097a4400000a4400000a40000000400000000070077776000000005665555555555555555555000000000
+070aaa76070aaa96079a77a907aa77a9099a99a9049009a9040000a4040000040000000400000004070777760000000055555555555555555555550000000000
+0067aa60006999600069aa900a7aaa909a7a9a994a7a9a904a000a944a0000900000000000000000006777600000000000000000055555550000000000000000
+01050050010500500105995001a5995009a9a7a904a9a7a004a907a044a900a44900009440000000010500500000000000000000000555555000000000000000
+0011111100111111001111110011111100919a9100444a4000444a4004444a400494094004000940001111111000000000000000000000555500000000000000
+00000000000000000000000500000000000000000009000500044494000090000099900500049994000094440499940500449094000094400499940400000000
+0000000000000000000900550000009000000000009a90550004999990099a99099a99550044aaaa90499a9949aaa94504900009904000990000a94000000000
+0055555555555955559a9555005559955555999559aaa9550049aaaa9599aaa999aaa995049aaa0aa99aaaaa9aa0aa94040000000000000a90000a9400000000
+057755a955599a9559a7a950057799a955599aa95aa7aa50057aaa0aaa9aaaa999a0aa90049aa000a99aa00999000a9449000000090000040000000400000000
+55555a7a5559a7a5559a95005559aa7a5559a7aaa9a9a900555aa00aa9aaa0aaa9a9a990549aa00aa9a9a009aa00aa944400000000000004a000a09400000000
+000000a905559a959a900000000099a905559aa99a9909000049aaa99599aaa9aaa9999004aaaa0a999aaa09aaaaa99404900009900a00090000009400000000
+0000000000055555a7a00000000009a900055995a7a90000000499a400099aa9a7a999000049aaaa9499aaa4a999994004490090900000040000404000000000
+00000000000000555a90000000000000000000555a90000000004499000099959a99000000049a9440449a44944444000044999440449a404040440000000000
+00000000000000000000000000000000000000000000000000044000005445400054454000544540005455400050554005005000000000000000000000000000
+00000000000400000040400000000000000000000009900005499450049994550499945504404055040050550500505000000000000000000000000000000000
+00000000000500000004000000000000000aa000009aa900049aa940549999455509904555000005500000055000000550000005000000000000000000000000
+040554000454550000545000000a000000a77a0009a77a9049a77a94499a99944990090544900005400000050000000000000000000000000000000000000000
+00444450000544500054500000a7a00000a77a0009a77a9049a77a94499aa9945900099459000044090000550000000500000005000000000000000000000000
+040554000005444000444000000a0000000aa000009aa900049aa940549999455499095554900955500009555500000550000000000000000000000000000000
+00000000000054500005000000000000000000000009900005499450094994400959944009544440040554400000004000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000044000005445000054550000545500005455000050550000500050000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00707000077000077007700007700000000707000000707000077000000770770000770077077770077077700000070700000000000000000000000000000000
+07707700077000777000770077700000007707700007707700077000000770777000770077077770077077770000770770000000000000000000000000000000
+77707770077007770000750777000000077707770077707770077000000770007700770077000000077000777007770777000000000000000000000000000000
+77000000077077700000007770000000077000000077000770077000000770007700770077000000077000077007700000000000000000000000000000000000
+77000000077077000000007700000000077000000077000770077000000770007700770077000000077000077007700000000000000000000000000000000000
+77700000077070000000007700000000077700000077000770077000000770007700770077000000077000777007770000000000000000000000000000000000
+07775000077000000000007700000000007775000077000770077000000770007700770077077770077077770000777500000000000000000000000000000000
+00777700077077000000007700000000000777700077000770077000000770007700770077077770077077700000077770000000000000000000000000000000
+00057770077077000000007700000000000057770077000770077000000770007700770077000000077077000000005777000000000000000000000000000000
+00000770077007700000007700000000000000770077000770077000000770007700770077000000077007700000000077000000000000000000000000000000
+00000770077007700000007700000000000000770077000770077000000770007700770077000000077007700000000077000000000000000000000000000000
+77707770077000770000007700000000077707770077707770077000000770007700770077000000077000770007770777000000000000000000000000000000
+07707700077000777000007700000000007707700007707700077077700770777000770077077770077000777000770770000000000000000000000000000000
+00707000077000077000007700000000000707000000707000077077700770770000770077077770077000077000070700000000000000000000000000000000
+__label__
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222225555555552222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222252222222722222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222225777777777222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222226777722722222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222677772722222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222267776222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222252252122222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222221111111222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222727222277222277227722227722222222727222222727222277222222772772222772277277772277277722222272722222222222222222
+22222222222222227727722277222777222772277722222227727722227727722277222222772777222772277277772277277772222772772222222222222222
+22222222222222277727772277227772222752777222222277727772277727772277222222772227722772277222222277222777227772777222222222222222
+22222222222222277222222277277722222227772222222277222222277222772277222222772227722772277222222277222277227722222222222222222222
+22222222222222277222222277277222222227722222222277222222277222772277222222772227722772277222222277222277227722222222222222222222
+22222222222222277722222277272222222227722222222277722222277222772277222222772227722772277222222277222777227772222222222222222222
+22222222222222227775222277222222222227722222222227775222277222772277222222772227722772277277772277277772222777522222222222222222
+22222222222222222777722277277222222227722222222222777722277222772277222222772227722772277277772277277722222277772222222222222222
+22222222222222222257772277277222222227722222222222257772277222772277222222772227722772277222222277277222222225777222222222222222
+22222222222222222222772277227722222227722222222222222772277222772277222222772227722772277222222277227722222222277222222222222222
+22222222222222222222772277227722222227722222222222222772277222772277222222772227722772277222222277227722222222277222222222222222
+22222222222222277727772277222772222227722222222277727772277727772277222222772227722772277222222277222772227772777222222222222222
+22222222222222227727722277222777222227722222222227727722227727722277277722772777222772277277772277222777222772772222222222222222
+22222222222222222727222277222277222227722222222222727222222727222277277722772772222772277277772277222277222272722222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222882888288828882222228828282888288822222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222228002808288828002222280828282800280822222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222228222888280828822222282828282882288022222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222228282808282828022222282828882802280822222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222228882828282828882222288020802888282822222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222220002020202020002222200222022000202022222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222111222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222221111122222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222211111112222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222211111112222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222262222262222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222226222622222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222226222622222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222626222222222222222222222222222222222222222222222222222222222222222222222222
+222222222222222222222222222222222222222222222222222226e6222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222333222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222232222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222323222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222288828882888228822882222228888822222288822882222228828882888288828882222222222222222222222222222222
+22222222222222222222222222222280828082800280028002222288080882222208028082222280020802808280820802222222222222222222222222222222
+22222222222222222222222222222288828802882288828882222288808882222228228282222288822822888288022822222222222222222222222222222222
+22222222222222222222222222222280028082802200820082222288080882222228228282222200822822808280822822222222222222222222222222222222
+22222222222222222222222222222282228282888288028802222208888802222228228802222288022822828282822822222222222222222222222222222222
+22222222222222222222222222222202220202000200220022222220000022222220220022222200222022020202022022222222222222222222222222222222
+22222222222222211122222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222111112222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222221111111222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222221111111222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222226222226222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222622262222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222622262222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222262622222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+2222222222222226e622222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222233322222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222223222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222232322222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+2222222222222222222222222222222222222222222222222222222222222222ee22222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222233322222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222223332222222222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222222222222233332222222222222222222222222222222222222222222222222222222222222
+222222222222222222222222222222222222222222222222222222e277777777777777772e222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222333777777777777777733222222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222232777777777777777723322222222222222222222222222222222222222222222222222222
+22222222222222222222222222222222222222222222222222222323777777777777777733322222222222222222222222222222222222222222222222222222
+222222222222222222222222222222222222ee222e222222222222e277777777777777772e2e22222222222222e2222222222222222222222e22222222222222
+22222222222222222222222222222222222333223322222222222333777777777777777733332222222222222332222222222222222222223322222222222222
+22222222222222222222222222222222222233322332222222222232777777777777777723333222222222222233222222222222222222222332222222222222
+22222222222222222222222222222222222333323232222222222323777777777777777732323222222222222323222222222222222222223232222222222222
+33333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333
+33777377733333333333333333333333333333333333337373777333337773777377737373777377733333333333333333333377737773777373737773777333
+33007300733333333333333333333333333333333333337373070337337073007300737373707370733333333333333333333370730073007373737073707333
+33777337733333333333333333333333333333333333337773373330337373777377737773777373733333333333333333333373737773777377737773737333
+44700440744444444444444444444444444444444444447074474447447474700470040074007474744444444444444444444474747004700400740074747444
+44777477744444444444444444444444444444444444447474777440447774777477744474447477744444444444444444444477747774777444744474777444
+44000400044444444444444444444444444444444444440404000444440004000400044404440400044444444444444444444400040004000444044404000444
+44444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444
+
+__map__
+0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000004040000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0101020302010302010202030201020200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000808182838485868788898a8b8c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000909192939495969798999a9b9c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+__sfx__
+910100003d6203b62039620306200f620036200162000610016100161001610026100261002610026100261002610036100361003610036100361002610006100160000000000000000000000000000000000000
+0006000000000356601b660276701a6701e670156701a6700e670136700667009660106601365019650146500d64012640126401d6402563012630166301d6201b6201261000010116100001005610016100a610
+c20800002a751297512875127751267512675125751257512475123751227512175120751207511f7411e7411d7311c7311c7311b731197311873116731147311373111731107310e7310d7310b7310a72108751
+060800002665024650206501a650156500f6500965007650046500165000650006500060000600086000260001600006000060000600006000060000600006000000000000000000000000000000000000000000
+940600001b6501a650186501565013650106500d65009650046500165000650006500260002600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+940300002a65027650246501f6502765026650256502365021650216501965026650246501e650166500f6500b650096500765006650056500465003650016500065000650036000000000000000000000000000
+9a0200000825007260042600226001250002300020000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
